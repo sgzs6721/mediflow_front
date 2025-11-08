@@ -1,0 +1,14 @@
+.nurse-workbench {
+  padding: 24px;
+}
+
+.nurse-workbench h2 {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .nurse-workbench {
+    padding: 16px;
+  }
+}
+

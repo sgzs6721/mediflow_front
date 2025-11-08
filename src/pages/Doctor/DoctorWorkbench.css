@@ -1,0 +1,14 @@
+.doctor-workbench {
+  padding: 24px;
+}
+
+.doctor-workbench h2 {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .doctor-workbench {
+    padding: 16px;
+  }
+}
+

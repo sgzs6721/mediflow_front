@@ -1,0 +1,10 @@
+.permission-management {
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .permission-management {
+    padding: 16px;
+  }
+}
+

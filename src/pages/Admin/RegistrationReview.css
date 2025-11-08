@@ -1,0 +1,15 @@
+.registration-review {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .registration-review .ant-table {
+    font-size: 12px;
+  }
+
+  .registration-review .ant-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
