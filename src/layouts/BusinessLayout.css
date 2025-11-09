@@ -9,23 +9,20 @@
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 0 24px;
+  position: relative;
 }
 
 .logo {
   font-size: 20px;
   font-weight: bold;
   color: #1890ff;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
+  margin-right: 24px; /* logo与菜单之间留出间距 */
 }
 
 .user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: flex; /* 重新添加flex布局，确保Avatar居中 */
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
   cursor: pointer;
   padding: 8px 16px;
   border-radius: 4px;
@@ -36,35 +33,61 @@
   background: #f0f0f0;
 }
 
-.username {
-  margin-left: 8px;
+.header-menu.ant-menu-horizontal {
+  border-bottom: none;
+  line-height: 64px; /* 与header高度一致 */
+  flex-grow: 1; /* 菜单占据中间剩余空间 */
 }
 
-.layout-sider {
-  background: #fff;
+/* 下拉菜单中用户信息的样式 */
+.user-profile-menu-item .ant-dropdown-menu-item-icon {
+  margin-right: 8px; /* 头像与文字的间距 */
+}
+
+.user-profile-menu-item .ant-dropdown-menu-title-content {
+  display: flex;
+  align-items: center;
 }
 
 .layout-content {
   padding: 24px;
   background: #f0f2f5;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px); /* header高度为64px */
 }
 
 @media (max-width: 768px) {
   .layout-header {
     padding: 0 16px;
+    flex-wrap: wrap; /* 允许项目换行 */
+    height: auto; /* 自动高度以适应内容 */
   }
 
   .logo {
     font-size: 16px;
+    margin-right: 16px;
+    margin-bottom: 8px; /* 移动端logo下方留出间距 */
   }
 
-  .username {
-    display: none;
+  .logo::after {
+    content: ""; /* 隐藏管理员文字 */
+  }
+
+  .header-menu.ant-menu-horizontal {
+    width: 100%; /* 菜单占据整行 */
+    border-bottom: 1px solid #f0f0f0; /* 添加底部边框 */
+    margin-bottom: 8px;
+  }
+
+  .user-info {
+    width: auto; /* 移动端用户区域宽度自适应 */
+    /* 移除了 justify-content: flex-end; */ /* 由外层Dropdown控制 */
+    padding: 8px;
   }
 
   .layout-content {
     padding: 16px;
+    margin-left: 0 !important; /* 强制移除左侧margin */
+    min-height: calc(100vh - auto); /* 调整内容区域高度计算，适应自动header高度 */
   }
 }
 

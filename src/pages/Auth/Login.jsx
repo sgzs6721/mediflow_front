@@ -22,16 +22,16 @@ const Login = () => {
       const response = await loginApi(values.username, values.password);
       
       // 保存token和用户信息
-      login(response.token, {
-        username: response.username,
-        realName: response.realName,
-        role: response.role,
+      login(response.data.token, {
+        username: response.data.username,
+        realName: response.data.realName,
+        role: response.data.role,
       });
 
       message.success('登录成功！');
 
       // 根据角色跳转到对应首页
-      const homeRoute = ROLE_HOME_ROUTES[response.role] || '/';
+      const homeRoute = ROLE_HOME_ROUTES[response.data.role] || '/';
       navigate(homeRoute, { replace: true });
     } catch (error) {
       message.error(error.message || '登录失败，请重试');

@@ -2,9 +2,58 @@
   padding: 24px;
 }
 
+.permission-category-group {
+  margin-bottom: 16px;
+}
+
+.permission-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 字段名和选择器两端对齐 */
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  background-color: #fafafa;
+}
+
+.permission-item .ant-typography-strong {
+  flex-basis: 60%; /* 字段名占据更多空间 */
+}
+
+.permission-item .ant-select {
+  flex-basis: 35%; /* 选择器占据剩余空间 */
+}
+
+/* 覆盖Collapse默认样式，使其更紧凑 */
+.ant-collapse-item .ant-collapse-header {
+  padding: 12px 16px;
+}
+
+.ant-collapse-content-box {
+  padding: 16px;
+}
+
 @media (max-width: 768px) {
   .permission-management {
     padding: 16px;
+  }
+
+  .permission-item {
+    flex-direction: column; /* 在移动端改为垂直布局 */
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .permission-item .ant-typography-strong,
+  .permission-item .ant-select {
+    width: 100%; /* 占据整行 */
+    flex-basis: auto; /* 移除固定宽度限制 */
+    margin-bottom: 8px; /* 元素之间添加间距 */
+  }
+
+  .permission-item .ant-select {
+    margin-bottom: 0; /* 最后一个元素不需要底部间距 */
   }
 }
 

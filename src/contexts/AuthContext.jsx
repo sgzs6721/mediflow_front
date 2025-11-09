@@ -19,14 +19,23 @@ export const AuthProvider = ({ children }) => {
       const savedUser = userStorage.get();
 
       if (token && savedUser) {
+        setUser(savedUser); // 优先使用保存的用户信息恢复会话
         try {
-          // 验证token有效性
-          const currentUser = await getCurrentUser();
-          setUser(currentUser);
+          // 验证token有效性，并获取最新用户信息
+          const currentUserResponse = await getCurrentUser(); // 获取完整的ApiResponse
+          if (currentUserResponse && currentUserResponse.success) {
+            setUser(currentUserResponse.data); // 使用API返回的最新用户数据更新
+          } else {
+            console.error('获取当前用户失败:', currentUserResponse?.message || '未知错误');
+            tokenStorage.remove(); // 仅清除token，不立即清除用户数据
+          }
         } catch (error) {
-          console.error('Token验证失败:', error);
-          logout();
+          console.error('Token验证失败或网络错误:', error);
+          tokenStorage.remove(); // 仅清除token，不立即清除用户数据
         }
+      } else if (!token && savedUser) {
+        // 如果没有token但有用户数据，则清除用户数据
+        userStorage.remove();
       }
 
       setLoading(false);

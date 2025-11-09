@@ -13,7 +13,8 @@ export const login = async (username, password) => {
     username,
     password,
   });
-  return response.data;
+  // 响应拦截器已经返回了data字段，直接返回response即可
+  return response;
 };
 
 /**
@@ -21,7 +22,8 @@ export const login = async (username, password) => {
  */
 export const register = async (data) => {
   const response = await request.post(API_ENDPOINTS.AUTH.REGISTER, data);
-  return response.data;
+  // 响应拦截器已经返回了data字段，直接返回response即可
+  return response;
 };
 
 /**
@@ -29,7 +31,8 @@ export const register = async (data) => {
  */
 export const getCurrentUser = async () => {
   const response = await request.get(API_ENDPOINTS.AUTH.CURRENT_USER);
-  return response.data;
+  // 响应拦截器已经返回了data字段，直接返回response即可
+  return response;
 };
 
 /**
@@ -37,6 +40,7 @@ export const getCurrentUser = async () => {
  */
 export const logout = async () => {
   const response = await request.post(API_ENDPOINTS.AUTH.LOGOUT);
-  return response.data;
+  // 响应拦截器已经返回了data字段，直接返回response即可
+  return response;
 };
 
