@@ -120,60 +120,48 @@ const PermissionManagement = () => {
   };
 
   return (
-    <div className="permission-management">
-      <Card 
-        title="权限配置管理"
-        extra={
-          <Space>
-            {/* 移除了角色筛选 Select */}
-            <Button icon={<ReloadOutlined />} onClick={fetchPermissions}>刷新</Button>
-            <Button onClick={handleClearCache}>清除缓存</Button>
-          </Space>
-        }
-      >
-        <div style={{ marginBottom: 16 }}>
-          <Space>
-            <Tag color="success">可编辑：可以查看和修改</Tag>
-            <Tag color="processing">只读：只能查看不能修改</Tag>
-            <Tag color="default">无权限：完全不可见</Tag>
-          </Space>
-        </div>
-
-        <Collapse accordion loading={loading}> {/* 使用 Collapse 进行分组 */}
-          {Object.entries(groupedPermissions).map(([roleName, categories]) => (
-            <Panel 
-              header={<Tag color="blue">{roleTextMap[roleName] || roleName}</Tag>} 
-              key={roleName}
-            >
-              {Object.entries(categories).map(([dataCategory, permissionsInCategories]) => (
-                <div key={dataCategory} className="permission-category-group">
-                  <Divider orientation="left">
-                    <Tag color="purple">{categoryTextMap[dataCategory] || dataCategory}</Tag>
-                  </Divider>
-                  {permissionsInCategories.map((permission) => (
-                    <Space key={permission.id} className="permission-item">
-                      <Text strong>{permission.dataField}</Text>
-                      <Select
-                        value={permission.permissionType}
-                        style={{ width: 120 }}
-                        onChange={(value) => handleUpdatePermission(permission.id, value)}
-                      >
-                        <Option value="EDITABLE">
-                          <Tag color="success">可编辑</Tag>
-                        </Option>
-                        <Option value="READONLY">
-                          <Tag color="processing">只读</Tag>
-                        </Option>
-                        <Option value="NONE">
-                          <Tag color="default">无权限</Tag>
-                        </Option>
-                      </Select>
-                    </Space>
+    <div className="permission-management" style={{padding: 0}}>
+      <Card  style={{ marginLeft: 0, marginRight: 0 }} title="权限配置管理">
+        <div style={{ marginBottom: 16, fontSize: 14, color: '#666' }}>权限类型：可编辑/只读/无权限（按岗位和字段分配）</div>
+        <Collapse accordion>
+          {Object.entries(groupedPermissions || {})
+            .filter(([roleName, categories]) => !!roleName && categories && Object.keys(categories).length > 0)
+            .map(([roleName, categories]) => (
+              <Panel 
+                header={<div className="category-header-center">{roleTextMap[roleName] ? <Tag color="blue">{roleTextMap[roleName] || roleName}</Tag> : roleTextMap[roleName] || roleName}</div>} 
+                key={roleName}
+              >
+                {Object.entries(categories)
+                  .filter(([dataCategory, permissionsInCategories]) => !!dataCategory && permissionsInCategories && permissionsInCategories.length > 0)
+                  .map(([dataCategory, permissionsInCategories]) => (
+                    <div key={dataCategory} className="permission-category-group">
+                      <Divider orientation="center">
+                        <div className="category-header-center">
+                          <Tag color="purple">{categoryTextMap[dataCategory] || dataCategory}</Tag>
+                        </div>
+                      </Divider>
+                      <div className="permission-items-grid">
+                        {permissionsInCategories.map((permission) => (
+                          <div key={permission.id} className="permission-item-box">
+                            <Space className="permission-item" style={{width:'100%'}}>
+                              <Text strong>{permission.dataField}</Text>
+                              <Select
+                                value={permission.permissionType}
+                                style={{ width: 120 }}
+                                onChange={(value) => handleUpdatePermission(permission.id, value)}
+                              >
+                                <Option value="EDITABLE">可编辑</Option>
+                                <Option value="READONLY">只读</Option>
+                                <Option value="NONE">无权限</Option>
+                              </Select>
+                            </Space>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   ))}
-                </div>
-              ))}
-            </Panel>
-          ))}
+              </Panel>
+            ))}
         </Collapse>
       </Card>
     </div>

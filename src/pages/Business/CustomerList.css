@@ -4,18 +4,8 @@
 
 .search-bar {
   margin-bottom: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
 }
 
 @media (max-width: 768px) {
-  .search-bar {
-    flex-direction: column;
-  }
-
-  .search-bar > * {
-    width: 100% !important;
-  }
 }
 

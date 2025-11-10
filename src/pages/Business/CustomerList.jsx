@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Input, Select, Tag, Space, Modal, message, Card } from 'antd';
+import { Table, Button, Input, Select, Tag, Space, Modal, message, Card, Row, Col, List } from 'antd';
 import {
   PlusOutlined,
   SearchOutlined,
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
-  ReloadOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { getCustomers, deleteCustomer } from '../../services/customer';
+import { getCustomers, deleteCustomer, updateCustomer } from '../../services/customer';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import CreateCustomerModal from '../../components/CreateCustomerModal';
 import './CustomerList.css';
@@ -23,6 +22,8 @@ const CustomerList = () => {
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = useState('');
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
   const { isMobile } = useMediaQuery();
   const navigate = useNavigate();
 
@@ -71,99 +72,14 @@ const CustomerList = () => {
     COMPLETED: { text: '已完成', color: 'gray' },
   };
 
-  const columns = [
-    {
-      title: '客户姓名',
-      dataIndex: 'name',
-      key: 'name',
-      width: 100,
-      fixed: isMobile ? undefined : 'left',
-    },
-    {
-      title: '性别',
-      dataIndex: 'gender',
-      key: 'gender',
-      width: 60,
-      render: (text) => text || '-',
-    },
-    {
-      title: '电话',
-      dataIndex: 'phone',
-      key: 'phone',
-      width: 120,
-    },
-    {
-      title: '公司',
-      dataIndex: 'companyName',
-      key: 'companyName',
-      ellipsis: true,
-      render: (text) => text || '-',
-    },
-    {
-      title: '状态',
-      dataIndex: 'customerStatus',
-      key: 'customerStatus',
-      width: 100,
-      render: (status) => {
-        const config = statusMap[status] || { text: status, color: 'default' };
-        return <Tag color={config.color}>{config.text}</Tag>;
-      },
-    },
-    {
-      title: '病历号',
-      dataIndex: 'medicalRecordNo',
-      key: 'medicalRecordNo',
-      width: 150,
-      render: (text) => text || '-',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      width: 160,
-      render: (text) => dayjs(text).format('YYYY-MM-DD HH:mm'),
-    },
-    {
-      title: '操作',
-      key: 'action',
-      width: 200,
-      fixed: isMobile ? undefined : 'right',
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="link"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => navigate(`/business/customers/${record.id}`)}
-          >
-            查看详情
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => navigate(`/business/customers/${record.id}/edit`)}
-          >
-            编辑
-          </Button>
-          <Button
-            type="link"
-            danger
-            size="small"
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.id, record.name)}
-          >
-            删除
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+  // 移除了 columns 定义
 
   return (
     <div className="customer-list">
       <Card
         title="客户管理"
+        style={{ marginLeft: 0, marginRight: 0 }}
+        bodyStyle={{ padding: '16px' }}
         extra={
           <Button
             type="primary"
@@ -175,44 +91,87 @@ const CustomerList = () => {
         }
       >
         {/* 搜索栏 */}
-        <Space className="search-bar" wrap>
-          <Input
-            placeholder="搜索客户姓名、电话、公司"
-            prefix={<SearchOutlined />}
-            style={{ width: isMobile ? '100%' : 300 }}
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-            allowClear
-          />
-          <Select
-            placeholder="客户状态"
-            style={{ width: isMobile ? '100%' : 150 }}
-            value={status || undefined}
-            onChange={setStatus}
-            allowClear
-          >
-            <Option value="LEAD">潜在客户</Option>
-            <Option value="PATIENT">正式患者</Option>
-            <Option value="IN_TREATMENT">治疗中</Option>
-            <Option value="COMPLETED">已完成</Option>
-          </Select>
-          <Button icon={<ReloadOutlined />} onClick={loadData}>
-            刷新
-          </Button>
-        </Space>
+        <Row gutter={[16, 16]} className="search-bar" justify="start" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
+          <Col xs={12} sm={12} md={12} lg={12} xl={12}>
+            <Input
+              placeholder="搜索客户姓名、电话、公司"
+              prefix={<SearchOutlined />}
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              allowClear
+            />
+          </Col>
+          <Col xs={12} sm={12} md={12} lg={12} xl={12}>
+            <Select
+              placeholder="客户状态"
+              style={{ width: '100%' }}
+              value={status || undefined}
+              onChange={setStatus}
+              allowClear
+            >
+              <Option value="LEAD">潜在客户</Option>
+              <Option value="PATIENT">正式患者</Option>
+              <Option value="IN_TREATMENT">治疗中</Option>
+              <Option value="COMPLETED">已完成</Option>
+            </Select>
+          </Col>
+        </Row>
 
         {/* 客户列表 */}
-        <Table
-          columns={columns}
+        <List
+          grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 4 }}
           dataSource={data}
-          rowKey="id"
           loading={loading}
-          scroll={{ x: isMobile ? 1200 : undefined }}
+          rowKey="id"
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
             showTotal: (total) => `共 ${total} 条`,
           }}
+          renderItem={(item) => (
+            <List.Item>
+              <Card
+                title={item.name}
+                actions={[
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<EyeOutlined />}
+                    onClick={() => navigate(`/business/customers/${item.id}`)}
+                  >
+                    查看详情
+                  </Button>,
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      setEditingCustomer(item);
+                      setEditModalVisible(true);
+                    }}
+                  >
+                    编辑
+                  </Button>,
+                  <Button
+                    type="link"
+                    danger
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleDelete(item.id, item.name)}
+                  >
+                    删除
+                  </Button>,
+                ]}
+              >
+                <p><strong>性别:</strong> {item.gender || '-'}</p>
+                <p><strong>电话:</strong> {item.phone || '-'}</p>
+                <p><strong>公司:</strong> {item.companyName || '-'}</p>
+                <p><strong>状态:</strong> <Tag color={statusMap[item.customerStatus]?.color || 'default'}>{statusMap[item.customerStatus]?.text || item.customerStatus}</Tag></p>
+                <p><strong>病历号:</strong> {item.medicalRecordNo || '-'}</p>
+                <p><strong>创建时间:</strong> {dayjs(item.createdAt).format('YYYY-MM-DD HH:mm')}</p>
+              </Card>
+            </List.Item>
+          )}
         />
       </Card>
 
@@ -222,6 +181,21 @@ const CustomerList = () => {
         onCancel={() => setCreateModalVisible(false)}
         onSuccess={() => {
           setCreateModalVisible(false);
+          loadData();
+        }}
+      />
+      {/* 编辑客户弹窗 */}
+      <CreateCustomerModal
+        visible={editModalVisible}
+        mode="edit"
+        initialValues={editingCustomer || {}}
+        onCancel={() => {
+          setEditModalVisible(false);
+          setEditingCustomer(null);
+        }}
+        onSuccess={() => {
+          setEditModalVisible(false);
+          setEditingCustomer(null);
           loadData();
         }}
       />

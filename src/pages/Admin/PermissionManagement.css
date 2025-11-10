@@ -1,9 +1,27 @@
 .permission-management {
-  padding: 24px;
+  padding: 0;
+  margin: 0;
 }
 
-.permission-category-group {
-  margin-bottom: 16px;
+.category-header-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.permission-items-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 0;
+}
+
+.permission-item-box {
+  width: 50%;
+  box-sizing: border-box;
+  padding-right: 16px;
+  margin-bottom: 12px;
+  display: flex;
 }
 
 .permission-item {

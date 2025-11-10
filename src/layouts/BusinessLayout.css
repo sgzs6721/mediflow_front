@@ -4,12 +4,20 @@
 
 .layout-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 0 24px;
   position: relative;
+}
+.header-avatar-area {
+  position: absolute;
+  top: 0;
+  right: 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  z-index: 2;
 }
 
 .logo {
@@ -50,7 +58,6 @@
 }
 
 .layout-content {
-  padding: 24px;
   background: #f0f2f5;
   min-height: calc(100vh - 64px); /* header高度为64px */
 }
@@ -74,7 +81,6 @@
 
   .header-menu.ant-menu-horizontal {
     width: 100%; /* 菜单占据整行 */
-    border-bottom: 1px solid #f0f0f0; /* 添加底部边框 */
     margin-bottom: 8px;
   }
 
@@ -85,7 +91,6 @@
   }
 
   .layout-content {
-    padding: 16px;
     margin-left: 0 !important; /* 强制移除左侧margin */
     min-height: calc(100vh - auto); /* 调整内容区域高度计算，适应自动header高度 */
   }

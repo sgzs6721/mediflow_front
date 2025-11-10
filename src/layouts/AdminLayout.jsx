@@ -30,7 +30,11 @@ const AdminLayout = () => {
     navigate('/login');
   };
 
-  // 移除了 toggleCollapsed 函数
+  const handleUserMenuClick = ({ key }) => {
+    if (key === 'logout') {
+      handleLogout();
+    }
+  };
 
   const userMenuItems = [
     {
@@ -41,17 +45,16 @@ const AdminLayout = () => {
           <Text>{user?.realName || user?.username}</Text>
         </Space>
       ),
-      disabled: true, // 用户信息不可点击
-      className: 'user-profile-menu-item', // 添加 class 用于样式调整
+      disabled: true, 
+      className: 'user-profile-menu-item',
     },
     {
-      type: 'divider', // 分割线
+      type: 'divider', 
     },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
       label: '退出登录',
-      onClick: handleLogout,
     },
   ];
 
@@ -59,43 +62,48 @@ const AdminLayout = () => {
     {
       key: 'customers',
       icon: <TeamOutlined />,
-      label: '客户列表', // 将 '客户公海' 更名为 '客户列表'
-      onClick: () => navigate('/admin/customers'),
+      label: '客户列表',
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
       label: '权限配置',
-      onClick: () => navigate('/admin/settings'),
     },
     {
       key: 'registration-review',
       icon: <AuditOutlined />,
       label: '注册审核',
-      onClick: () => navigate('/admin/registration-review'),
     },
   ];
+
+  const handleMenuClick = (e) => {
+    if (e.key === 'customers') navigate('/admin/customers');
+    if (e.key === 'settings') navigate('/admin/settings');
+    if (e.key === 'registration-review') navigate('/admin/registration-review');
+  };
 
   return (
     <Layout className="business-layout">
       <Header className="layout-header">
         <div className="logo">MediFlow - 管理员</div>
-        {/* 移除了移动端菜单切换按钮 */}
         <Menu
           theme="light"
           mode="horizontal"
           defaultSelectedKeys={['customers']} // 调整默认选中项为 'customers'
-          items={menuItems}
+          items={menuItems.filter(Boolean)}
           className="header-menu" // 新增class用于样式调整
+          onClick={handleMenuClick}
+          style={{ borderBottom: 'none' }} // 强制移除底部分隔线
         />
-        {/* 将用户头像和下拉菜单移动到右上角 */}
-        <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-          <span> {/* 添加 span 标签包裹触发器 */}
-            <a onClick={(e) => e.preventDefault()} className="ant-dropdown-link user-profile-trigger"> {/* 简单的 a 标签作为触发器，只包含 Avatar */}
-              <Avatar icon={<UserOutlined />} />
-            </a>
-          </span>
-        </Dropdown>
+        <div className="header-avatar-area">
+          <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} placement="bottomRight">
+            <span> {/* 添加 span 标签包裹触发器 */}
+              <a onClick={(e) => e.preventDefault()} className="ant-dropdown-link user-profile-trigger"> {/* 简单的 a 标签作为触发器，只包含 Avatar */}
+                <Avatar icon={<UserOutlined />} />
+              </a>
+            </span>
+          </Dropdown>
+        </div>
       </Header>
       <Layout>
         {/* 移除了 Sider 组件 */}

@@ -158,21 +158,43 @@ const RegistrationReview = () => {
           </Button>
         }
       >
-        <Table
-          columns={columns}
-          dataSource={data}
-          rowKey="id"
-          loading={loading}
-          scroll={{ x: isMobile ? 800 : undefined }}
-          locale={{
-            emptyText: '暂无待审核的申请',
-          }}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showTotal: (total) => `共 ${total} 条`,
-          }}
-        />
+        <div className="registration-review-list">
+          {data && data.length > 0 ? data.map((user) => (
+            <Card key={user.id} className="review-item-card" bordered style={{ marginBottom: 24 }}>
+              <div className="review-item-title">
+                <span className="review-item-user">{user.username}</span>
+                <span className="review-item-realname">{user.realName}</span>
+              </div>
+              <div className="review-item-fields">
+                <div><b>联系电话：</b>{user.phone || '-'}</div>
+                <div><b>角色：</b><Tag color="blue">{ROLE_MAP[user.appliedRole] || user.appliedRole}</Tag></div>
+                <div><b>申请理由：</b>{user.reason || '-'}</div>
+                <div><b>申请时间：</b>{dayjs(user.createdAt).format('YYYY-MM-DD HH:mm:ss')}</div>
+              </div>
+              <div className="review-item-actions">
+                <Button
+                  type="primary"
+                  size="small"
+                  icon={<CheckOutlined />}
+                  onClick={() => handleApprove(user.id)}
+                >
+                  通过
+                </Button>
+                <Button
+                  danger
+                  size="small"
+                  icon={<CloseOutlined />}
+                  onClick={() => showRejectModal(user)}
+                  style={{ marginLeft: 12 }}
+                >
+                  拒绝
+                </Button>
+              </div>
+            </Card>
+          )) : (
+            <div style={{ textAlign: 'center', color: '#aaa', margin: '60px 0' }}>暂无待审核的申请</div>
+          )}
+        </div>
       </Card>
 
       {/* 拒绝弹窗 */}
