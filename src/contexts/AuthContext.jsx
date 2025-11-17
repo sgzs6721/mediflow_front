@@ -49,6 +49,8 @@ export const AuthProvider = ({ children }) => {
     tokenStorage.set(token);
     userStorage.set(userData);
     setUser(userData);
+    // 登录后不需要立即验证token，因为刚刚获取的token是有效的
+    // 避免重复调用getCurrentUser接口
   };
 
   // 登出

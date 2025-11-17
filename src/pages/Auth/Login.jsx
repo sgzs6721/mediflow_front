@@ -17,6 +17,8 @@ const Login = () => {
   const { isMobile } = useMediaQuery();
 
   const onFinish = async (values) => {
+    if (loading) return; // 防止重复提交
+    
     setLoading(true);
     try {
       const response = await loginApi(values.username, values.password);
@@ -34,7 +36,8 @@ const Login = () => {
       const homeRoute = ROLE_HOME_ROUTES[response.data.role] || '/';
       navigate(homeRoute, { replace: true });
     } catch (error) {
-      message.error(error.message || '登录失败，请重试');
+      // 错误消息已经在响应拦截器中显示，这里不再重复显示
+      console.error('登录失败:', error);
     } finally {
       setLoading(false);
     }
