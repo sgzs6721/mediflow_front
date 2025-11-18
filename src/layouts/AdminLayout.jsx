@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Layout, Menu, Dropdown, Avatar, Typography, Space } from 'antd'; // 移除了 Button
 import {
   UserOutlined,
@@ -14,13 +14,14 @@ import RegistrationReview from '../pages/Admin/RegistrationReview';
 import PermissionManagement from '../pages/Admin/PermissionManagement';
 import CustomerList from '../pages/Business/CustomerList'; // 导入 CustomerList 组件
 // 移除了 useMediaQuery 和 { useState, useEffect }
-import '../layouts/BusinessLayout.css';
+import './AdminLayout.css';
 
 const { Header, Content } = Layout; // 移除了 Sider
 const { Text } = Typography;
 
 const AdminLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
   // 移除了 collapsed 状态和 isMobile 判断
   // 移除了 useEffect 钩子
@@ -28,6 +29,15 @@ const AdminLayout = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  // 根据当前路由获取选中的菜单项
+  const getSelectedKey = () => {
+    const path = location.pathname;
+    if (path.includes('/admin/customers')) return 'customers';
+    if (path.includes('/admin/settings')) return 'settings';
+    if (path.includes('/admin/registration-review')) return 'registration-review';
+    return 'registration-review'; // 默认选中注册审核
   };
 
   const handleUserMenuClick = ({ key }) => {
@@ -89,11 +99,11 @@ const AdminLayout = () => {
         <Menu
           theme="light"
           mode="horizontal"
-          defaultSelectedKeys={['customers']} // 调整默认选中项为 'customers'
+          selectedKeys={[getSelectedKey()]}
           items={menuItems.filter(Boolean)}
-          className="header-menu" // 新增class用于样式调整
+          className="header-menu"
           onClick={handleMenuClick}
-          style={{ borderBottom: 'none' }} // 强制移除底部分隔线
+          style={{ borderBottom: 'none' }}
         />
         <div className="header-avatar-area">
           <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} placement="bottomRight">

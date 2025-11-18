@@ -1,0 +1,17 @@
+.appointment-management {
+  padding: 0;
+}
+
+.appointment-management .ant-card {
+  border-radius: 8px;
+}
+
+.appointment-management .ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .appointment-management {
+    padding: 0;
+  }
+}

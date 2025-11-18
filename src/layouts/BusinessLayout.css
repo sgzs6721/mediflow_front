@@ -2,39 +2,65 @@
   min-height: 100vh;
 }
 
+/* 强制header为水平布局 */
+.business-layout > .ant-layout-header,
+.business-layout .layout-header,
 .layout-header {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  background: #fff;
-  padding: 0 24px;
-  position: relative;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  background: #fff !important;
+  padding: 0 24px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  height: 64px !important;
+  line-height: normal !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  overflow: visible !important;
 }
+
+.layout-header > * {
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.header-right {
+  display: flex !important;
+  align-items: center !important;
+  flex-shrink: 0;
+}
+
 .header-avatar-area {
-  position: absolute;
-  top: 0;
-  right: 24px;
-  height: 64px;
   display: flex;
   align-items: center;
-  z-index: 2;
 }
 
 .logo {
   font-size: 20px;
   font-weight: bold;
   color: #1890ff;
-  margin-right: 24px; /* logo与菜单之间留出间距 */
+  flex-shrink: 0;
+  line-height: 1.5;
 }
 
 .user-info {
-  display: flex; /* 重新添加flex布局，确保Avatar居中 */
-  align-items: center; /* 垂直居中 */
-  justify-content: center; /* 水平居中 */
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  gap: 8px;
   cursor: pointer;
   padding: 8px 16px;
   border-radius: 4px;
   transition: background 0.3s;
+}
+
+.user-info .username {
+  font-size: 14px;
+  color: #262626;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .user-info:hover {
@@ -45,6 +71,12 @@
   border-bottom: none;
   line-height: 64px; /* 与header高度一致 */
   flex-grow: 1; /* 菜单占据中间剩余空间 */
+}
+
+/* 用户下拉菜单样式 */
+.ant-dropdown-menu {
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* 下拉菜单中用户信息的样式 */
@@ -60,39 +92,100 @@
 .layout-content {
   background: #f0f2f5;
   min-height: calc(100vh - 64px); /* header高度为64px */
+  padding: 0 !important;
+}
+
+/* 移动端菜单容器 */
+.mobile-menu-container {
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 确保桌面端不显示移动菜单 */
+@media (min-width: 769px) {
+  .mobile-menu-container {
+    display: none !important;
+  }
+}
+
+.mobile-menu.ant-menu-horizontal {
+  border-bottom: none;
+  line-height: 46px;
+  min-width: max-content;
+}
+
+.mobile-menu .ant-menu-item {
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.mobile-menu .ant-menu-item-icon {
+  font-size: 16px;
+}
+
+/* 确保桌面端显示用户名 */
+@media (min-width: 769px) {
+  .username {
+    display: inline-block !important;
+  }
 }
 
 @media (max-width: 768px) {
+  .business-layout > .ant-layout-header,
+  .business-layout .layout-header,
   .layout-header {
-    padding: 0 16px;
-    flex-wrap: wrap; /* 允许项目换行 */
-    height: auto; /* 自动高度以适应内容 */
+    padding: 0 12px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    line-height: normal !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    overflow: visible !important;
   }
 
   .logo {
-    font-size: 16px;
-    margin-right: 16px;
-    margin-bottom: 8px; /* 移动端logo下方留出间距 */
+    font-size: 15px;
+    margin-right: 8px;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .logo::after {
-    content: ""; /* 隐藏管理员文字 */
-  }
-
-  .header-menu.ant-menu-horizontal {
-    width: 100%; /* 菜单占据整行 */
-    margin-bottom: 8px;
+  .header-right {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0;
+    margin-left: auto;
   }
 
   .user-info {
-    width: auto; /* 移动端用户区域宽度自适应 */
-    /* 移除了 justify-content: flex-end; */ /* 由外层Dropdown控制 */
-    padding: 8px;
+    padding: 4px;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  .user-info .ant-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .username {
+    display: none;
+  }
+
+  .layout-sider {
+    display: none;
   }
 
   .layout-content {
-    margin-left: 0 !important; /* 强制移除左侧margin */
-    min-height: calc(100vh - auto); /* 调整内容区域高度计算，适应自动header高度 */
+    margin-left: 0 !important;
+    min-height: calc(100vh - 56px - 46px);
   }
 }
 

@@ -6,12 +6,14 @@ import {
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
+  CalendarOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getCustomers, deleteCustomer, updateCustomer } from '../../services/customer';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import CreateCustomerModal from '../../components/CreateCustomerModal';
+import CreateAppointmentModal from '../../components/CreateAppointmentModal';
 import './CustomerList.css';
 
 const { Option } = Select;
@@ -24,6 +26,8 @@ const CustomerList = () => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
+  const [appointmentModalVisible, setAppointmentModalVisible] = useState(false);
+  const [appointmentCustomer, setAppointmentCustomer] = useState(null);
   const { isMobile } = useMediaQuery();
   const navigate = useNavigate();
 
@@ -78,8 +82,6 @@ const CustomerList = () => {
     <div className="customer-list">
       <Card
         title="客户管理"
-        style={{ marginLeft: 0, marginRight: 0 }}
-        bodyStyle={{ padding: '16px' }}
         extra={
           <Button
             type="primary"
@@ -131,44 +133,61 @@ const CustomerList = () => {
           renderItem={(item) => (
             <List.Item>
               <Card
-                title={item.name}
-                actions={[
-                  <Button
-                    type="link"
-                    size="small"
-                    icon={<EyeOutlined />}
-                    onClick={() => navigate(`/business/customers/${item.id}`)}
-                  >
-                    查看详情
-                  </Button>,
-                  <Button
-                    type="link"
-                    size="small"
-                    icon={<EditOutlined />}
-                    onClick={() => {
-                      setEditingCustomer(item);
-                      setEditModalVisible(true);
-                    }}
-                  >
-                    编辑
-                  </Button>,
-                  <Button
-                    type="link"
-                    danger
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    onClick={() => handleDelete(item.id, item.name)}
-                  >
-                    删除
-                  </Button>,
-                ]}
+                hoverable
+                className="customer-card"
+                onClick={() => navigate(`/business/customers/${item.id}`)}
               >
-                <p><strong>性别:</strong> {item.gender || '-'}</p>
-                <p><strong>电话:</strong> {item.phone || '-'}</p>
-                <p><strong>公司:</strong> {item.companyName || '-'}</p>
-                <p><strong>状态:</strong> <Tag color={statusMap[item.customerStatus]?.color || 'default'}>{statusMap[item.customerStatus]?.text || item.customerStatus}</Tag></p>
-                <p><strong>病历号:</strong> {item.medicalRecordNo || '-'}</p>
-                <p><strong>创建时间:</strong> {dayjs(item.createdAt).format('YYYY-MM-DD HH:mm')}</p>
+                <div className="customer-card-header">
+                  <div className="customer-name">
+                    <span className="name-text">{item.name}</span>
+                    <Tag color={statusMap[item.customerStatus]?.color || 'default'}>
+                      {statusMap[item.customerStatus]?.text || item.customerStatus}
+                    </Tag>
+                  </div>
+                  <div className="customer-actions" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<CalendarOutlined />}
+                      onClick={() => {
+                        setAppointmentCustomer(item);
+                        setAppointmentModalVisible(true);
+                      }}
+                    />
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<EditOutlined />}
+                      onClick={() => {
+                        setEditingCustomer(item);
+                        setEditModalVisible(true);
+                      }}
+                    />
+                    <Button
+                      type="text"
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={() => handleDelete(item.id, item.name)}
+                    />
+                  </div>
+                </div>
+                <div className="customer-card-body">
+                  <div className="info-row">
+                    <span className="info-label">电话</span>
+                    <a href={`tel:${item.phone}`} className="info-value phone-link" onClick={(e) => e.stopPropagation()}>
+                      {item.phone || '-'}
+                    </a>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">公司</span>
+                    <span className="info-value">{item.companyName || '-'}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">创建时间</span>
+                    <span className="info-value">{dayjs(item.createdAt).format('YYYY-MM-DD HH:mm')}</span>
+                  </div>
+                </div>
               </Card>
             </List.Item>
           )}
@@ -197,6 +216,22 @@ const CustomerList = () => {
           setEditModalVisible(false);
           setEditingCustomer(null);
           loadData();
+        }}
+      />
+      
+      {/* 预约弹窗 */}
+      <CreateAppointmentModal
+        visible={appointmentModalVisible}
+        customerId={appointmentCustomer?.id}
+        customerName={appointmentCustomer?.name}
+        onCancel={() => {
+          setAppointmentModalVisible(false);
+          setAppointmentCustomer(null);
+        }}
+        onSuccess={() => {
+          setAppointmentModalVisible(false);
+          setAppointmentCustomer(null);
+          message.success('预约创建成功');
         }}
       />
     </div>

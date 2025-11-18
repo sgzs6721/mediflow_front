@@ -1,0 +1,139 @@
+.business-layout {
+  min-height: 100vh;
+}
+
+.layout-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background: #fff;
+  padding: 0 24px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.header-avatar-area {
+  position: absolute;
+  top: 0;
+  right: 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1890ff;
+  margin-right: 24px;
+  white-space: nowrap;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.user-info:hover {
+  background: #f0f0f0;
+}
+
+.header-menu.ant-menu-horizontal {
+  border-bottom: none;
+  line-height: 64px;
+  flex-grow: 1;
+  max-width: calc(100% - 300px); /* 为logo和头像区域留出空间 */
+}
+
+/* 下拉菜单中用户信息的样式 */
+.user-profile-menu-item .ant-dropdown-menu-item-icon {
+  margin-right: 8px;
+}
+
+.user-profile-menu-item .ant-dropdown-menu-title-content {
+  display: flex;
+  align-items: center;
+}
+
+.layout-content {
+  background: #f0f2f5;
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  overflow-x: hidden; /* 防止水平滚动 */
+}
+
+/* 确保内容区域的卡片正常显示 */
+.layout-content .ant-card {
+  margin-bottom: 0;
+}
+
+.layout-content > * {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .layout-header {
+    padding: 0 16px;
+    height: 56px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-size: 16px;
+    margin-right: 16px;
+  }
+
+  .header-menu.ant-menu-horizontal {
+    max-width: calc(100% - 200px);
+    font-size: 14px;
+  }
+
+  .header-menu .ant-menu-item {
+    padding: 0 12px;
+  }
+
+  .header-avatar-area {
+    right: 16px;
+    height: 56px;
+  }
+
+  .layout-content {
+    padding: 16px;
+    min-height: calc(100vh - 56px);
+  }
+}
+
+@media (max-width: 576px) {
+  .layout-header {
+    height: auto;
+    min-height: 56px;
+    padding: 8px 16px;
+  }
+
+  .logo {
+    width: 100%;
+    margin-bottom: 8px;
+    margin-right: 0;
+  }
+
+  .header-menu.ant-menu-horizontal {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 8px;
+  }
+
+  .header-avatar-area {
+    position: static;
+    margin-left: auto;
+  }
+
+  .layout-content {
+    padding: 12px;
+  }
+}

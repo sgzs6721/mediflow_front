@@ -1,5 +1,45 @@
 .customer-detail-page {
-  padding: 24px;
+  padding: 12px;
+  background: #f0f2f5;
+  min-height: calc(100vh - 64px);
+}
+
+.customer-detail-page > .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* 详情页标题栏 */
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.back-button {
+  font-size: 18px;
+  color: #262626;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+.back-button:hover {
+  color: #1890ff;
+  background: #f0f0f0;
+}
+
+.detail-title {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.header-placeholder {
+  width: 40px;
+  flex-shrink: 0;
 }
 
 .loading-container {
@@ -9,9 +49,52 @@
   min-height: 400px;
 }
 
+.customer-detail-page .ant-card-body {
+  padding: 24px;
+}
+
+.detail-section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-section:first-child {
+  margin-top: 0;
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 16px;
+}
+
 .stats-row {
   display: flex;
   gap: 16px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 200px;
+  padding: 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
 .stat-item {
@@ -20,19 +103,57 @@
 
 .stat-label {
   font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
+  color: #8c8c8c;
+  margin-bottom: 12px;
+  font-weight: 500;
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
   color: #1890ff;
 }
 
 @media (max-width: 768px) {
+  .customer-detail-page {
+    padding: 8px;
+  }
+  
+  .customer-detail-page .ant-card-body {
+    padding: 12px;
+  }
+  
+  .detail-title {
+    font-size: 16px;
+  }
+  
+  .back-button {
+    font-size: 16px;
+  }
+  
   .stats-row {
-    flex-direction: column;
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  .stat-card {
+    flex: 1;
+    min-width: 0;
+    padding: 16px 8px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+  }
+  
+  .detail-section {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
   }
 }
 

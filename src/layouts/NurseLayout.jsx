@@ -1,8 +1,9 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Layout, Menu, Dropdown, Avatar, Typography } from 'antd';
 import { UserOutlined, DashboardOutlined, MedicineBoxOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import NurseWorkbench from '../pages/Nurse/NurseWorkbench';
 import '../layouts/BusinessLayout.css';
 
@@ -11,7 +12,9 @@ const { Text } = Typography;
 
 const NurseLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
+  const { isMobile } = useMediaQuery();
 
   const handleLogout = () => {
     logout();
@@ -42,6 +45,13 @@ const NurseLayout = () => {
     },
   ];
 
+  const getSelectedKey = () => {
+    const path = location.pathname;
+    if (path.includes('/workbench')) return ['workbench'];
+    if (path.includes('/orders')) return ['orders'];
+    return ['workbench'];
+  };
+
   return (
     <Layout className="business-layout">
       <Header className="layout-header">
@@ -55,10 +65,22 @@ const NurseLayout = () => {
           </Dropdown>
         </div>
       </Header>
+      {isMobile && (
+        <div className="mobile-menu-container">
+          <Menu
+            mode="horizontal"
+            selectedKeys={getSelectedKey()}
+            items={menuItems}
+            className="mobile-menu"
+          />
+        </div>
+      )}
       <Layout>
-        <Sider width={200} className="layout-sider">
-          <Menu mode="inline" defaultSelectedKeys={['workbench']} items={menuItems} />
-        </Sider>
+        {!isMobile && (
+          <Sider width={200} className="layout-sider">
+            <Menu mode="inline" selectedKeys={getSelectedKey()} items={menuItems} />
+          </Sider>
+        )}
         <Content className="layout-content">
           <Routes>
             <Route path="workbench" element={<NurseWorkbench />} />
