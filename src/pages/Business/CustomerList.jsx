@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Input, Select, Tag, Space, Modal, message, Card, Row, Col, List, Dropdown } from 'antd';
+import { Table, Button, Input, Select, Tag, Space, Modal, message, Card, Row, Col, List, Dropdown, Spin } from 'antd';
 import {
   PlusOutlined,
   SearchOutlined,
@@ -11,6 +11,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getCustomers, deleteCustomer, updateCustomer } from '../../services/customer';
+import { getCustomerAppointments } from '../../services/appointment';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import CreateCustomerModal from '../../components/CreateCustomerModal';
 import CreateAppointmentModal from '../../components/CreateAppointmentModal';
@@ -28,6 +29,9 @@ const CustomerList = () => {
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [appointmentModalVisible, setAppointmentModalVisible] = useState(false);
   const [appointmentCustomer, setAppointmentCustomer] = useState(null);
+  const [appointmentListVisible, setAppointmentListVisible] = useState(false);
+  const [customerAppointments, setCustomerAppointments] = useState([]);
+  const [loadingAppointments, setLoadingAppointments] = useState(false);
   const { isMobile } = useMediaQuery();
   const navigate = useNavigate();
 
@@ -76,6 +80,31 @@ const CustomerList = () => {
       loadData();
     } catch (error) {
       message.error('状态修改失败：' + error.message);
+    }
+  };
+
+  // 查看客户预约列表
+  const handleViewAppointments = async (customer) => {
+    setAppointmentCustomer(customer);
+    setLoadingAppointments(true);
+    setAppointmentListVisible(true);
+    try {
+      const response = await getCustomerAppointments(customer.id);
+      if (response && response.success) {
+        // 只显示待完成的预约
+        const scheduledAppointments = (response.data || []).filter(
+          apt => apt.appointmentStatus === 'SCHEDULED'
+        );
+        setCustomerAppointments(scheduledAppointments);
+      } else {
+        message.error('获取预约列表失败');
+        setCustomerAppointments([]);
+      }
+    } catch (error) {
+      message.error('获取预约列表失败：' + error.message);
+      setCustomerAppointments([]);
+    } finally {
+      setLoadingAppointments(false);
     }
   };
 
@@ -192,15 +221,47 @@ const CustomerList = () => {
                     </Dropdown>
                   </div>
                   <div className="customer-actions" onClick={(e) => e.stopPropagation()}>
-                    <Button
-                      type="text"
-                      size="small"
-                      icon={<CalendarOutlined />}
-                      onClick={() => {
-                        setAppointmentCustomer(item);
-                        setAppointmentModalVisible(true);
+                    <Dropdown
+                      menu={{
+                        items: [
+                          {
+                            key: 'view',
+                            label: '查看预约',
+                            icon: <EyeOutlined />,
+                            onClick: () => handleViewAppointments(item),
+                            disabled: !item.appointmentCount || item.appointmentCount === 0,
+                          },
+                          {
+                            key: 'create',
+                            label: '新增预约',
+                            icon: <PlusOutlined />,
+                            onClick: () => {
+                              setAppointmentCustomer(item);
+                              setAppointmentModalVisible(true);
+                            },
+                          },
+                        ],
                       }}
-                    />
+                      trigger={['click']}
+                    >
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<CalendarOutlined />}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {item.appointmentCount > 0 && (
+                          <span style={{ 
+                            marginLeft: 4, 
+                            fontSize: 12, 
+                            fontWeight: 'bold',
+                            color: '#1890ff'
+                          }}>
+                            {item.appointmentCount}
+                          </span>
+                        )}
+                      </Button>
+                    </Dropdown>
                     <Button
                       type="text"
                       size="small"
@@ -289,8 +350,58 @@ const CustomerList = () => {
           setAppointmentModalVisible(false);
           setAppointmentCustomer(null);
           message.success('预约创建成功');
+          loadData();
         }}
       />
+
+      {/* 预约列表弹窗 */}
+      <Modal
+        title={`${appointmentCustomer?.name} 的预约列表`}
+        open={appointmentListVisible}
+        onCancel={() => {
+          setAppointmentListVisible(false);
+          setCustomerAppointments([]);
+        }}
+        footer={[
+          <Button key="close" onClick={() => {
+            setAppointmentListVisible(false);
+            setCustomerAppointments([]);
+          }}>
+            关闭
+          </Button>
+        ]}
+        width={600}
+      >
+        <Spin spinning={loadingAppointments}>
+          {customerAppointments.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>
+              暂无待完成的预约
+            </div>
+          ) : (
+            <List
+              dataSource={customerAppointments}
+              renderItem={(appointment) => (
+                <List.Item style={{ padding: '12px 0', borderBottom: '1px solid #f0f0f0' }}>
+                  <div style={{ width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <CalendarOutlined style={{ color: '#1890ff' }} />
+                        <span style={{ fontWeight: 'bold', fontSize: 14 }}>
+                          {dayjs(appointment.appointmentTime).format('YYYY-MM-DD HH:mm')}
+                        </span>
+                        <Tag color="blue">待完成</Tag>
+                      </div>
+                    </div>
+                    <div style={{ marginTop: 8, fontSize: 13, color: '#666', paddingLeft: 24 }}>
+                      {appointment.appointmentPurpose || '无备注'}
+                    </div>
+                  </div>
+                </List.Item>
+              )}
+            />
+          )}
+        </Spin>
+      </Modal>
     </div>
   );
 };
