@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Input, Select, Tag, Space, Modal, message, Card, Row, Col, List } from 'antd';
+import { Table, Button, Input, Select, Tag, Space, Modal, message, Card, Row, Col, List, Dropdown } from 'antd';
 import {
   PlusOutlined,
   SearchOutlined,
@@ -68,6 +68,17 @@ const CustomerList = () => {
     });
   };
 
+  // 修改客户状态
+  const handleStatusChange = async (customerId, newStatus) => {
+    try {
+      await updateCustomer(customerId, { customerStatus: newStatus });
+      message.success('状态修改成功');
+      loadData();
+    } catch (error) {
+      message.error('状态修改失败：' + error.message);
+    }
+  };
+
   // 客户状态映射
   const statusMap = {
     LEAD: { text: '潜在客户', color: 'default' },
@@ -133,16 +144,52 @@ const CustomerList = () => {
           renderItem={(item) => (
             <List.Item>
               <Card
-                hoverable
                 className="customer-card"
-                onClick={() => navigate(`/business/customers/${item.id}`)}
               >
                 <div className="customer-card-header">
                   <div className="customer-name">
-                    <span className="name-text">{item.name}</span>
-                    <Tag color={statusMap[item.customerStatus]?.color || 'default'}>
-                      {statusMap[item.customerStatus]?.text || item.customerStatus}
-                    </Tag>
+                    <span 
+                      className="name-text" 
+                      onClick={() => navigate(`/business/customers/${item.id}`)}
+                      style={{ cursor: 'pointer', color: '#1890ff' }}
+                    >
+                      {item.name}
+                    </span>
+                    <Dropdown
+                      menu={{
+                        items: [
+                          {
+                            key: 'LEAD',
+                            label: '潜在客户',
+                            onClick: () => handleStatusChange(item.id, 'LEAD'),
+                          },
+                          {
+                            key: 'PATIENT',
+                            label: '正式患者',
+                            onClick: () => handleStatusChange(item.id, 'PATIENT'),
+                          },
+                          {
+                            key: 'IN_TREATMENT',
+                            label: '治疗中',
+                            onClick: () => handleStatusChange(item.id, 'IN_TREATMENT'),
+                          },
+                          {
+                            key: 'COMPLETED',
+                            label: '已完成',
+                            onClick: () => handleStatusChange(item.id, 'COMPLETED'),
+                          },
+                        ],
+                      }}
+                      trigger={['click']}
+                    >
+                      <Tag 
+                        color={statusMap[item.customerStatus]?.color || 'default'}
+                        style={{ cursor: 'pointer' }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {statusMap[item.customerStatus]?.text || item.customerStatus}
+                      </Tag>
+                    </Dropdown>
                   </div>
                   <div className="customer-actions" onClick={(e) => e.stopPropagation()}>
                     <Button
@@ -173,19 +220,29 @@ const CustomerList = () => {
                   </div>
                 </div>
                 <div className="customer-card-body">
-                  <div className="info-row">
-                    <span className="info-label">电话</span>
-                    <a href={`tel:${item.phone}`} className="info-value phone-link" onClick={(e) => e.stopPropagation()}>
-                      {item.phone || '-'}
-                    </a>
-                  </div>
-                  <div className="info-row">
-                    <span className="info-label">公司</span>
-                    <span className="info-value">{item.companyName || '-'}</span>
-                  </div>
-                  <div className="info-row">
-                    <span className="info-label">创建时间</span>
-                    <span className="info-value">{dayjs(item.createdAt).format('YYYY-MM-DD HH:mm')}</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 32px' }}>
+                    <div className="info-row">
+                      <span className="info-label">电话</span>
+                      <a href={`tel:${item.phone}`} className="info-value phone-link" onClick={(e) => e.stopPropagation()}>
+                        {item.phone || '-'}
+                      </a>
+                    </div>
+                    <div className="info-row">
+                      <span className="info-label">行业</span>
+                      <span className="info-value">{item.industry || '-'}</span>
+                    </div>
+                    <div className="info-row">
+                      <span className="info-label">公司</span>
+                      <span className="info-value">{item.companyName || '-'}</span>
+                    </div>
+                    <div className="info-row">
+                      <span className="info-label">资金实力</span>
+                      <span className="info-value">{item.financialStrength || '-'}</span>
+                    </div>
+                    <div className="info-row" style={{ gridColumn: '1 / -1' }}>
+                      <span className="info-label">创建时间</span>
+                      <span className="info-value">{dayjs(item.createdAt).format('YYYY-MM-DD HH:mm')}</span>
+                    </div>
                   </div>
                 </div>
               </Card>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Tabs, Table, Tag, Spin, Button, message, Modal, Form, Input, DatePicker, Select, InputNumber } from 'antd';
+import { Card, Descriptions, Tabs, Table, Tag, Spin, Button, message, Modal, Form, Input, DatePicker, TimePicker, Select, InputNumber } from 'antd';
 import { LeftCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import request from '../../utils/request';
 import './CustomerDetail.css';
@@ -21,7 +21,8 @@ const CustomerDetail = () => {
   const [followUpForm] = Form.useForm();
   const [orderForm] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
-  const [treatmentItems, setTreatmentItems] = useState([{ name: '', quantity: 1, price: 0 }]);
+  const [treatmentItems, setTreatmentItems] = useState([{ name: '', price: 0 }]);
+  const [activeTab, setActiveTab] = useState('1');
 
   useEffect(() => {
     fetchCustomer360();
@@ -49,12 +50,25 @@ const CustomerDetail = () => {
   const handleCreateFollowUp = async (values) => {
     try {
       setSubmitting(true);
+      
+      // 组合日期和时间
+      const visitDate = values.visitDate.format('YYYY-MM-DD');
+      const visitTimeStr = values.visitTime.format('HH:mm:ss');
+      const visitDateTime = `${visitDate} ${visitTimeStr}`;
+      
+      let nextFollowUpDateTime = null;
+      if (values.nextFollowUpDate && values.nextFollowUpTime) {
+        const nextDate = values.nextFollowUpDate.format('YYYY-MM-DD');
+        const nextTimeStr = values.nextFollowUpTime.format('HH:mm:ss');
+        nextFollowUpDateTime = `${nextDate} ${nextTimeStr}`;
+      }
+      
       const response = await request.post(`/business/customers/${id}/follow-ups`, {
         customerId: parseInt(id),
-        visitTime: values.visitTime.format('YYYY-MM-DD HH:mm:ss'),
+        visitTime: visitDateTime,
         visitMethod: values.visitMethod,
         visitContent: values.visitContent,
-        nextFollowUpTime: values.nextFollowUpTime ? values.nextFollowUpTime.format('YYYY-MM-DD HH:mm:ss') : null
+        nextFollowUpTime: nextFollowUpDateTime
       });
       
       if (response.success) {
@@ -84,7 +98,7 @@ const CustomerDetail = () => {
       
       const response = await request.post(`/business/customers/${id}/orders`, {
         customerId: parseInt(id),
-        treatmentItems: treatmentItems.filter(item => item.name && item.quantity && item.price),
+        treatmentItems: treatmentItems.filter(item => item.name && item.price),
         orderAmount: totalAmount
       });
       
@@ -92,7 +106,7 @@ const CustomerDetail = () => {
         message.success('订单创建成功');
         setOrderModalVisible(false);
         orderForm.resetFields();
-        setTreatmentItems([{ name: '', quantity: 1, price: 0 }]);
+        setTreatmentItems([{ name: '', price: 0 }]);
         fetchCustomer360(); // 刷新数据
       } else {
         message.error(response.message || '创建订单失败');
@@ -106,13 +120,13 @@ const CustomerDetail = () => {
 
   // 添加治疗项目
   const addTreatmentItem = () => {
-    setTreatmentItems([...treatmentItems, { name: '', quantity: 1, price: 0 }]);
+    setTreatmentItems([...treatmentItems, { name: '', price: 0 }]);
   };
 
   // 删除治疗项目
   const removeTreatmentItem = (index) => {
     const newItems = treatmentItems.filter((_, i) => i !== index);
-    setTreatmentItems(newItems.length > 0 ? newItems : [{ name: '', quantity: 1, price: 0 }]);
+    setTreatmentItems(newItems.length > 0 ? newItems : [{ name: '', price: 0 }]);
   };
 
   // 更新治疗项目
@@ -125,7 +139,7 @@ const CustomerDetail = () => {
   // 计算订单总金额
   const calculateTotalAmount = () => {
     return treatmentItems.reduce((sum, item) => {
-      return sum + (item.quantity || 0) * (item.price || 0);
+      return sum + (item.price || 0);
     }, 0);
   };
 
@@ -167,7 +181,6 @@ const CustomerDetail = () => {
   const orderColumns = [
     { title: '订单编号', dataIndex: 'orderNo', key: 'orderNo' },
     { title: '订单金额', dataIndex: 'orderAmount', key: 'orderAmount', render: (val) => `¥${val}` },
-    { title: '实收金额', dataIndex: 'paidAmount', key: 'paidAmount', render: (val) => val ? `¥${val}` : '-' },
     { 
       title: '订单状态', 
       dataIndex: 'orderStatus', 
@@ -188,10 +201,13 @@ const CustomerDetail = () => {
           <div className="detail-header">
             <Button 
               type="text"
-              icon={<LeftCircleOutlined />} 
               onClick={() => navigate(-1)}
               className="back-button"
-            />
+              size="large"
+              style={{ fontSize: 16, color: '#999', fontWeight: 'normal' }}
+            >
+              返回
+            </Button>
             <span className="detail-title">客户详情</span>
             <div className="header-placeholder"></div>
           </div>
@@ -245,17 +261,30 @@ const CustomerDetail = () => {
 
       {/* 详细信息Tab */}
       <div className="detail-section">
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="跟进记录" key="1">
-            <div style={{ marginBottom: 16, textAlign: 'right' }}>
+        <Tabs 
+          defaultActiveKey="1"
+          onChange={setActiveTab}
+          tabBarExtraContent={
+            activeTab === '1' ? (
               <Button 
                 type="primary" 
-                icon={<PlusOutlined />} 
+                shape="circle" 
+                icon={<PlusOutlined />}
                 onClick={() => setFollowUpModalVisible(true)}
-              >
-                新增跟进
-              </Button>
-            </div>
+                title="新增跟进"
+              />
+            ) : activeTab === '2' ? (
+              <Button 
+                type="primary" 
+                shape="circle" 
+                icon={<PlusOutlined />}
+                onClick={() => setOrderModalVisible(true)}
+                title="新增订单"
+              />
+            ) : null
+          }
+        >
+          <TabPane tab="跟进记录" key="1">
             <Table 
               dataSource={followUpRecords} 
               columns={followUpColumns}
@@ -265,21 +294,36 @@ const CustomerDetail = () => {
           </TabPane>
           
           <TabPane tab="订单信息" key="2">
-            <div style={{ marginBottom: 16, textAlign: 'right' }}>
-              <Button 
-                type="primary" 
-                icon={<PlusOutlined />} 
-                onClick={() => setOrderModalVisible(true)}
-              >
-                新增订单
-              </Button>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+              {orders && orders.map(order => (
+                <div key={order.id} style={{
+                  border: '1px solid #f0f0f0',
+                  borderRadius: 8,
+                  padding: 16,
+                  backgroundColor: '#fafafa'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <div style={{ fontSize: 12, color: '#999', fontWeight: 'bold' }}>订单编号</div>
+                    <div style={{ fontSize: 12, color: '#666', wordBreak: 'break-all', fontWeight: 'bold' }}>{order.orderNo}</div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                    <div style={{ fontSize: 12, color: '#999', fontWeight: 'bold' }}>订单金额</div>
+                    <div style={{ fontSize: 16, fontWeight: 'bold', color: '#1890ff' }}>¥{order.orderAmount}</div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: 12, color: '#999', fontWeight: 'bold' }}>创建时间</div>
+                    <div style={{ fontSize: 12 }}>{order.createdAt?.replace('T', ' ')}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <Table 
-              dataSource={orders} 
-              columns={orderColumns}
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
-            />
+            {(!orders || orders.length === 0) && (
+              <div style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>
+                暂无订单
+              </div>
+            )}
           </TabPane>
           
           <TabPane tab="体检数据" key="3">
@@ -316,8 +360,7 @@ const CustomerDetail = () => {
             )}
           </TabPane>
         </Tabs>
-        </div>
-      </Card>
+      </div>
 
       {/* 新增跟进记录弹窗 */}
       <Modal
@@ -336,17 +379,31 @@ const CustomerDetail = () => {
           layout="vertical"
           onFinish={handleCreateFollowUp}
         >
-          <Form.Item
-            name="visitTime"
-            label="跟进时间"
-            rules={[{ required: true, message: '请选择跟进时间' }]}
-          >
-            <DatePicker 
-              showTime 
-              format="YYYY-MM-DD HH:mm:ss" 
-              style={{ width: '100%' }}
-              placeholder="选择跟进时间"
-            />
+          <Form.Item label="跟进时间">
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Form.Item
+                name="visitDate"
+                rules={[{ required: true, message: '请选择日期' }]}
+                style={{ marginBottom: 0, flex: 1 }}
+              >
+                <DatePicker 
+                  format="YYYY-MM-DD" 
+                  style={{ width: '100%' }}
+                  placeholder="选择日期"
+                />
+              </Form.Item>
+              <Form.Item
+                name="visitTime"
+                rules={[{ required: true, message: '请选择时间' }]}
+                style={{ marginBottom: 0, flex: 1 }}
+              >
+                <TimePicker 
+                  format="HH:mm:ss" 
+                  style={{ width: '100%' }}
+                  placeholder="选择时间"
+                />
+              </Form.Item>
+            </div>
           </Form.Item>
 
           <Form.Item
@@ -372,16 +429,29 @@ const CustomerDetail = () => {
             />
           </Form.Item>
 
-          <Form.Item
-            name="nextFollowUpTime"
-            label="下次跟进时间"
-          >
-            <DatePicker 
-              showTime 
-              format="YYYY-MM-DD HH:mm:ss" 
-              style={{ width: '100%' }}
-              placeholder="选择下次跟进时间（可选）"
-            />
+          <Form.Item label="下次跟进时间（可选）">
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Form.Item
+                name="nextFollowUpDate"
+                style={{ marginBottom: 0, flex: 1 }}
+              >
+                <DatePicker 
+                  format="YYYY-MM-DD" 
+                  style={{ width: '100%' }}
+                  placeholder="选择日期"
+                />
+              </Form.Item>
+              <Form.Item
+                name="nextFollowUpTime"
+                style={{ marginBottom: 0, flex: 1 }}
+              >
+                <TimePicker 
+                  format="HH:mm:ss" 
+                  style={{ width: '100%' }}
+                  placeholder="选择时间"
+                />
+              </Form.Item>
+            </div>
           </Form.Item>
         </Form>
       </Modal>
@@ -404,21 +474,13 @@ const CustomerDetail = () => {
           layout="vertical"
         >
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 'bold', marginBottom: 8 }}>治疗项目</div>
             {treatmentItems.map((item, index) => (
               <div key={index} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                 <Input
                   placeholder="项目名称"
                   value={item.name}
                   onChange={(e) => updateTreatmentItem(index, 'name', e.target.value)}
-                  style={{ flex: 2 }}
-                />
-                <InputNumber
-                  placeholder="数量"
-                  min={1}
-                  value={item.quantity}
-                  onChange={(value) => updateTreatmentItem(index, 'quantity', value)}
-                  style={{ width: 100 }}
+                  style={{ flex: 1 }}
                 />
                 <InputNumber
                   placeholder="单价"
@@ -452,6 +514,7 @@ const CustomerDetail = () => {
           </div>
         </Form>
       </Modal>
+      </Card>
     </div>
   );
 };
