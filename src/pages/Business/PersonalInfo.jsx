@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Card, Form, Input, Button, message, Tabs, Space } from 'antd';
-import { UserOutlined, LockOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { Card, Form, Input, Button, message, Tabs } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { updateProfile, changePassword } from '../../services/auth';
@@ -11,6 +11,9 @@ const PersonalInfo = () => {
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
+  const [profileChanged, setProfileChanged] = useState(false);
+  const [passwordChanged, setPasswordChanged] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -29,6 +32,7 @@ const PersonalInfo = () => {
       await updateProfile(values);
       updateUser({ ...user, ...values });
       message.success('个人信息更新成功');
+      setProfileChanged(false);
     } catch (error) {
       if (error.errorFields) {
         return;
@@ -46,6 +50,7 @@ const PersonalInfo = () => {
       await changePassword(values);
       message.success('密码修改成功');
       passwordForm.resetFields();
+      setPasswordChanged(false);
     } catch (error) {
       if (error.errorFields) {
         return;
@@ -53,6 +58,24 @@ const PersonalInfo = () => {
       message.error('修改失败：' + error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 统一的确认修改处理
+  const handleConfirm = async () => {
+    if (activeTab === 'profile') {
+      await handleUpdateProfile();
+    } else {
+      await handleChangePassword();
+    }
+  };
+
+  // 检查按钮是否应该禁用
+  const isButtonDisabled = () => {
+    if (activeTab === 'profile') {
+      return !profileChanged;
+    } else {
+      return !passwordChanged;
     }
   };
 
@@ -65,6 +88,7 @@ const PersonalInfo = () => {
           form={profileForm}
           layout="vertical"
           style={{ maxWidth: 600 }}
+          onValuesChange={() => setProfileChanged(true)}
         >
           <Form.Item
             label="用户名"
@@ -91,12 +115,6 @@ const PersonalInfo = () => {
           >
             <Input placeholder="请输入手机号" />
           </Form.Item>
-
-          <Form.Item>
-            <Button type="primary" onClick={handleUpdateProfile} loading={loading}>
-              保存修改
-            </Button>
-          </Form.Item>
         </Form>
       ),
     },
@@ -108,6 +126,7 @@ const PersonalInfo = () => {
           form={passwordForm}
           layout="vertical"
           style={{ maxWidth: 600 }}
+          onValuesChange={() => setPasswordChanged(true)}
         >
           <Form.Item
             label="当前密码"
@@ -146,12 +165,6 @@ const PersonalInfo = () => {
           >
             <Input.Password prefix={<LockOutlined />} placeholder="请确认新密码" />
           </Form.Item>
-
-          <Form.Item>
-            <Button type="primary" onClick={handleChangePassword} loading={loading}>
-              修改密码
-            </Button>
-          </Form.Item>
         </Form>
       ),
     },
@@ -159,19 +172,36 @@ const PersonalInfo = () => {
 
   return (
     <div style={{ padding: '2px' }}>
-      <Card 
-        title={
-          <Space>
-            <Button 
-              type="text" 
-              icon={<ArrowLeftOutlined />} 
-              onClick={() => navigate(-1)}
-            />
-            <span>个人信息</span>
-          </Space>
-        }
+      <Card
+        title={<div style={{ textAlign: 'center' }}>个人信息</div>}
       >
-        <Tabs items={tabItems} />
+        <Tabs 
+          items={tabItems} 
+          activeKey={activeTab}
+          onChange={setActiveTab}
+        />
+
+        {/* 底部按钮行 */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '16px',
+          marginTop: '24px',
+          paddingTop: '16px',
+          borderTop: '1px solid #f0f0f0'
+        }}>
+          <Button onClick={() => navigate(-1)}>
+            返回
+          </Button>
+          <Button 
+            type="primary" 
+            onClick={handleConfirm} 
+            loading={loading}
+            disabled={isButtonDisabled()}
+          >
+            确认修改
+          </Button>
+        </div>
       </Card>
     </div>
   );

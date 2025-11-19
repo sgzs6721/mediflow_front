@@ -69,10 +69,11 @@ const NurseLayout = () => {
   };
 
   const getAvatarColor = () => {
-    const name = user?.realName || user?.username || '';
-    const colors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#1890ff', '#52c41a'];
-    const index = name.charCodeAt(0) % colors.length;
-    return colors[index];
+    return '#ffffff';
+  };
+
+  const getAvatarTextColor = () => {
+    return '#4A90E2';
   };
 
   return (
@@ -80,13 +81,19 @@ const NurseLayout = () => {
       <Header className="layout-header">
         <div className="logo">MediFlow - 护士端</div>
         <div className="header-right">
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+          <Dropdown 
+            menu={{ items: userMenuItems }} 
+            placement="bottomRight"
+            trigger={['click']}
+          >
             <div className="user-info-container">
               <Text className="username">{user?.realName || user?.username}</Text>
               <Avatar 
                 style={{ 
                   backgroundColor: getAvatarColor(),
-                  cursor: 'pointer'
+                  color: getAvatarTextColor(),
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
                 }}
               >
                 {getUserInitial()}

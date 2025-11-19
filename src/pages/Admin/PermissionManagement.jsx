@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Select, Button, message, Tag, Space, Collapse, Divider, Typography } from 'antd'; // 移除 Table，添加 Collapse, Divider, Typography
+import { Card, Select, Button, message, Tag, Space, Collapse, Divider, Typography, Spin } from 'antd'; // 移除 Table，添加 Collapse, Divider, Typography
 import { ReloadOutlined } from '@ant-design/icons';
 import { getAllPermissions, updatePermission, clearCache } from '../../services/permission';
 import './PermissionManagement.css';
@@ -121,6 +121,7 @@ const PermissionManagement = () => {
 
   return (
     <div className="permission-management" style={{padding: 0}}>
+      <Spin spinning={loading}>
       <Card  style={{ marginLeft: 0, marginRight: 0 }} title="权限配置管理">
         <div style={{ marginBottom: 16, fontSize: 14, color: '#666' }}>权限类型：可编辑/只读/无权限（按岗位和字段分配）</div>
         <Collapse accordion>
@@ -164,6 +165,7 @@ const PermissionManagement = () => {
             ))}
         </Collapse>
       </Card>
+      </Spin>
     </div>
   );
 };

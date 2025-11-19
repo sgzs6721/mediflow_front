@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Tag, Modal, Input, message, Card, Space } from 'antd';
+import { Table, Button, Tag, Modal, Input, message, Card, Space, Spin } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getRegistrationRequests, approveRequest, rejectRequest } from '../../services/admin';
@@ -145,21 +145,31 @@ const RegistrationReview = () => {
 
   return (
     <div className="registration-review">
+      <Spin spinning={loading}>
       <Card title="注册审核">
         <div className="registration-review-list">
           {data && data.length > 0 ? data.map((user) => (
             <Card key={user.id} className="review-item-card" bordered style={{ marginBottom: 24 }}>
-              <div className="review-item-title">
-                <span className="review-item-user">{user.username}</span>
-                <span className="review-item-realname">{user.realName}</span>
+              <div className="review-item-grid">
+                <div className="grid-item">
+                  <b>用户名：</b>{user.username}
+                </div>
+                <div className="grid-item">
+                  <b>真实姓名：</b>{user.realName || '-'}
+                </div>
+                <div className="grid-item">
+                  <b>联系电话：</b>{user.phone || '-'}
+                </div>
+                <div className="grid-item">
+                  <b>角色：</b>
+                  <Tag color="blue">{ROLE_MAP[user.appliedRole] || user.appliedRole}</Tag>
+                </div>
               </div>
               <div className="review-item-fields">
-                <div className="field-row">
-                  <span><b>联系电话：</b>{user.phone || '-'}</span>
-                  <span><b>角色：</b><Tag color="blue">{ROLE_MAP[user.appliedRole] || user.appliedRole}</Tag></span>
-                </div>
-                <div className="field-row">
+                <div className="field-row field-row-single">
                   <span><b>申请理由：</b>{user.reason || '-'}</span>
+                </div>
+                <div className="field-row field-row-single">
                   <span><b>申请时间：</b>{dayjs(user.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
                 </div>
               </div>
@@ -188,6 +198,7 @@ const RegistrationReview = () => {
           )}
         </div>
       </Card>
+      </Spin>
 
       {/* 拒绝弹窗 */}
       <Modal

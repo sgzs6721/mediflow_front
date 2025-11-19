@@ -5,20 +5,24 @@
 /* 强制header为水平布局 */
 .business-layout > .ant-layout-header,
 .business-layout .layout-header,
+.ant-layout-header.layout-header,
 .layout-header {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   justify-content: space-between !important;
   align-items: center !important;
-  background: #fff !important;
+  background: linear-gradient(135deg, #4A90E2 0%, #5BA3F5 50%, #7BB9FF 100%) !important;
+  border: none !important;
   padding: 0 24px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 12px 30px rgba(43, 115, 255, 0.15) !important;
   height: 64px !important;
   line-height: normal !important;
   min-height: 64px !important;
   max-height: 64px !important;
   overflow: visible !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
 }
 
 .layout-header > * {
@@ -40,7 +44,7 @@
 .logo {
   font-size: 20px;
   font-weight: bold;
-  color: #1890ff;
+  color: #ffffff;
   flex-shrink: 0;
   line-height: 1.5;
 }
@@ -56,14 +60,16 @@
 }
 
 .user-info-container:hover {
-  background: #f0f0f0;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.user-info-container .username {
-  font-size: 14px;
-  color: #262626;
-  font-weight: 500;
-  white-space: nowrap;
+.user-info-container .username,
+.user-info-container .ant-typography {
+  font-size: 14px !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
 }
 
 .user-info {
@@ -140,7 +146,8 @@
 
 /* 确保桌面端显示用户名 */
 @media (min-width: 769px) {
-  .username {
+  .user-info-container .username,
+  .user-info-container .ant-typography {
     display: inline-block !important;
   }
 }
@@ -148,6 +155,7 @@
 @media (max-width: 768px) {
   .business-layout > .ant-layout-header,
   .business-layout .layout-header,
+  .ant-layout-header.layout-header,
   .layout-header {
     padding: 0 12px !important;
     height: 56px !important;
@@ -177,17 +185,25 @@
   }
 
   .user-info-container {
-    padding: 4px;
-    gap: 0;
+    padding: 8px 12px;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
   }
 
   .user-info-container .ant-avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
   }
 
-  .user-info-container .username {
-    display: none !important;
+  .user-info-container .username,
+  .user-info-container .ant-typography {
+    display: inline-block !important;
+    font-size: 13px !important;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .layout-sider {

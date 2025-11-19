@@ -9,19 +9,16 @@
   box-shadow: 0 2px 8px rgba(170, 170, 170, 0.08);
   padding: 12px 14px 12px 14px !important;
 }
-.review-item-title {
-  font-size: 17px;
-  font-weight: 500;
-  margin-bottom: 6px;
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}
-.review-item-user {
+.review-item-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 24px;
+  font-size: 15px;
+  margin-bottom: 8px;
   color: #595959;
 }
-.review-item-realname {
-  color: #1890ff;
+.grid-item b {
+  margin-right: 4px;
 }
 .review-item-fields {
   color: #4c4c4c;
@@ -35,6 +32,14 @@
   display: flex;
   gap: 20px;
   margin-bottom: 4px;
+}
+.field-row-single {
+  flex-direction: column;
+  gap: 0;
+}
+.field-row-single span {
+  flex: none;
+  width: 100%;
 }
 
 .field-row span {
@@ -52,7 +57,7 @@
 }
 @media (max-width: 700px) {
   .review-item-card {padding: 8px !important;}
-  .review-item-title {font-size: 15px;gap: 8px;flex-direction: column;align-items: flex-start;}
+  .review-item-grid {grid-template-columns: 1fr;gap: 6px;}
   .review-item-actions {flex-direction: row;gap: 8px;}
   .registration-review-list {gap:8px;}
 }

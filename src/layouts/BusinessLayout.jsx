@@ -78,12 +78,14 @@ const BusinessLayout = () => {
     return name.charAt(0).toUpperCase();
   };
 
-  // 生成头像背景色（基于用户名）
+  // 生成头像背景色（白色，与蓝色背景搭配）
   const getAvatarColor = () => {
-    const name = user?.realName || user?.username || '';
-    const colors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#1890ff', '#52c41a'];
-    const index = name.charCodeAt(0) % colors.length;
-    return colors[index];
+    return '#ffffff';
+  };
+
+  // 获取头像文字颜色
+  const getAvatarTextColor = () => {
+    return '#4A90E2';
   };
 
   return (
@@ -91,13 +93,19 @@ const BusinessLayout = () => {
       <Header className="layout-header">
         <div className="logo">MediFlow - 商务端</div>
         <div className="header-right">
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+          <Dropdown 
+            menu={{ items: userMenuItems }} 
+            placement="bottomRight"
+            trigger={['click']}
+          >
             <div className="user-info-container">
               <Text className="username">{user?.realName || user?.username}</Text>
               <Avatar 
                 style={{ 
                   backgroundColor: getAvatarColor(),
-                  cursor: 'pointer'
+                  color: getAvatarTextColor(),
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
                 }}
               >
                 {getUserInitial()}
