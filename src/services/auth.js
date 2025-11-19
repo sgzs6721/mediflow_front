@@ -44,3 +44,19 @@ export const logout = async () => {
   return response;
 };
 
+/**
+ * 更新个人信息
+ */
+export const updateProfile = async (data) => {
+  const response = await request.put('/auth/profile', data);
+  return response;
+};
+
+/**
+ * 修改密码
+ */
+export const changePassword = async (data) => {
+  const response = await request.put('/auth/password', data);
+  return response;
+};
+

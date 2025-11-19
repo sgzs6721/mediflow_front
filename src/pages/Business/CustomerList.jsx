@@ -301,7 +301,9 @@ const CustomerList = () => {
                       <span className="info-value">{item.financialStrength || '-'}</span>
                     </div>
                     <div className="info-row" style={{ gridColumn: '1 / -1' }}>
-                      <span className="info-label">创建时间</span>
+                      <span className="info-label">创建人</span>
+                      <span className="info-value">{item.assignedToName || '-'}</span>
+                      <span className="info-label" style={{ marginLeft: '32px' }}>创建时间</span>
                       <span className="info-value">{dayjs(item.createdAt).format('YYYY-MM-DD HH:mm')}</span>
                     </div>
                   </div>

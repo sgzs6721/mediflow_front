@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import DoctorWorkbench from '../pages/Doctor/DoctorWorkbench';
+import PersonalInfo from '../pages/Business/PersonalInfo';
 import '../layouts/BusinessLayout.css';
 
 const { Header, Sider, Content } = Layout;
@@ -22,6 +23,15 @@ const DoctorLayout = () => {
   };
 
   const userMenuItems = [
+    {
+      key: 'profile',
+      icon: <UserOutlined />,
+      label: '个人信息',
+      onClick: () => navigate('/doctor/profile'),
+    },
+    {
+      type: 'divider',
+    },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
@@ -47,9 +57,22 @@ const DoctorLayout = () => {
 
   const getSelectedKey = () => {
     const path = location.pathname;
+    if (path.includes('/profile')) return [];
     if (path.includes('/workbench')) return ['workbench'];
     if (path.includes('/patients')) return ['patients'];
     return ['workbench'];
+  };
+
+  const getUserInitial = () => {
+    const name = user?.realName || user?.username || '';
+    return name.charAt(0).toUpperCase();
+  };
+
+  const getAvatarColor = () => {
+    const name = user?.realName || user?.username || '';
+    const colors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae', '#1890ff', '#52c41a'];
+    const index = name.charCodeAt(0) % colors.length;
+    return colors[index];
   };
 
   return (
@@ -58,9 +81,16 @@ const DoctorLayout = () => {
         <div className="logo">MediFlow - 医生端</div>
         <div className="header-right">
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <div className="user-info">
-              <Avatar icon={<UserOutlined />} />
+            <div className="user-info-container">
               <Text className="username">{user?.realName || user?.username}</Text>
+              <Avatar 
+                style={{ 
+                  backgroundColor: getAvatarColor(),
+                  cursor: 'pointer'
+                }}
+              >
+                {getUserInitial()}
+              </Avatar>
             </div>
           </Dropdown>
         </div>
@@ -85,6 +115,7 @@ const DoctorLayout = () => {
           <Routes>
             <Route path="workbench" element={<DoctorWorkbench />} />
             <Route path="patients" element={<DoctorWorkbench />} />
+            <Route path="profile" element={<PersonalInfo />} />
             <Route path="*" element={<DoctorWorkbench />} />
           </Routes>
         </Content>

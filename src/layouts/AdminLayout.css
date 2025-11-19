@@ -3,40 +3,67 @@
 }
 
 .layout-header {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  background: #fff;
-  padding: 0 24px;
-  position: relative;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  background: #fff !important;
+  padding: 0 24px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  height: 64px !important;
+  line-height: normal !important;
+  min-height: 64px !important;
+  max-height: 64px !important;
+  overflow: visible !important;
 }
 
-.header-avatar-area {
-  position: absolute;
-  top: 0;
-  right: 24px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  z-index: 2;
+.layout-header > * {
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.header-right {
+  display: flex !important;
+  align-items: center !important;
+  flex-shrink: 0;
 }
 
 .logo {
   font-size: 20px;
   font-weight: bold;
   color: #1890ff;
-  margin-right: 24px;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.user-info-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.user-info-container:hover {
+  background: #f0f0f0;
+}
+
+.user-info-container .username {
+  font-size: 14px;
+  color: #262626;
+  font-weight: 500;
   white-space: nowrap;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  justify-content: center;
   cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: 4px;
+  border-radius: 50%;
   transition: background 0.3s;
 }
 
@@ -48,7 +75,6 @@
   border-bottom: none;
   line-height: 64px;
   flex-grow: 1;
-  max-width: calc(100% - 300px); /* 为logo和头像区域留出空间 */
 }
 
 /* 下拉菜单中用户信息的样式 */
@@ -77,30 +103,51 @@
   max-width: 100%;
 }
 
+/* 确保桌面端显示用户名 */
+@media (min-width: 769px) {
+  .username {
+    display: inline-block !important;
+  }
+}
+
 @media (max-width: 768px) {
   .layout-header {
-    padding: 0 16px;
-    height: 56px;
-    flex-wrap: wrap;
+    padding: 0 12px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    flex-wrap: nowrap !important;
   }
 
   .logo {
-    font-size: 16px;
-    margin-right: 16px;
+    font-size: 15px;
+    margin-right: 8px;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .header-menu.ant-menu-horizontal {
-    max-width: calc(100% - 200px);
-    font-size: 14px;
+  
+  .header-right {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0;
+    margin-left: auto;
   }
 
-  .header-menu .ant-menu-item {
-    padding: 0 12px;
+  .user-info-container {
+    padding: 4px;
+    gap: 0;
   }
 
-  .header-avatar-area {
-    right: 16px;
-    height: 56px;
+  .user-info-container .ant-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .user-info-container .username {
+    display: none !important;
   }
 
   .layout-content {
@@ -109,31 +156,33 @@
   }
 }
 
-@media (max-width: 576px) {
-  .layout-header {
-    height: auto;
-    min-height: 56px;
-    padding: 8px 16px;
-  }
+.mobile-menu-container {
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
 
-  .logo {
-    width: 100%;
-    margin-bottom: 8px;
-    margin-right: 0;
-  }
-
-  .header-menu.ant-menu-horizontal {
-    width: 100%;
-    max-width: 100%;
-    margin-top: 8px;
-  }
-
-  .header-avatar-area {
-    position: static;
-    margin-left: auto;
-  }
-
-  .layout-content {
-    padding: 12px;
+/* 确保桌面端不显示移动菜单 */
+@media (min-width: 769px) {
+  .mobile-menu-container {
+    display: none !important;
   }
 }
+
+.mobile-menu.ant-menu-horizontal {
+  border-bottom: none;
+  line-height: 46px;
+  min-width: max-content;
+}
+
+.mobile-menu .ant-menu-item {
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.mobile-menu .ant-menu-item-icon {
+  font-size: 16px;
+}
+

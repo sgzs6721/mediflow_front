@@ -30,6 +30,17 @@
   line-height: 1.75;
   padding-left: 1px;
 }
+
+.field-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 4px;
+}
+
+.field-row span {
+  flex: 1;
+  min-width: 0;
+}
 .review-item-actions {
   display: flex;
   flex-direction: row;

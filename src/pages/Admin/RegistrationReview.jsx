@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Table, Button, Tag, Modal, Input, message, Card, Space } from 'antd';
-import { CheckOutlined, CloseOutlined, ReloadOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { getRegistrationRequests, approveRequest, rejectRequest } from '../../services/admin';
 import { ROLE_MAP } from '../../config/api';
@@ -145,19 +145,7 @@ const RegistrationReview = () => {
 
   return (
     <div className="registration-review">
-      <Card
-        title="注册审核"
-        extra={
-          <Button
-            type="primary"
-            icon={<ReloadOutlined />}
-            onClick={loadData}
-            loading={loading}
-          >
-            刷新
-          </Button>
-        }
-      >
+      <Card title="注册审核">
         <div className="registration-review-list">
           {data && data.length > 0 ? data.map((user) => (
             <Card key={user.id} className="review-item-card" bordered style={{ marginBottom: 24 }}>
@@ -166,10 +154,14 @@ const RegistrationReview = () => {
                 <span className="review-item-realname">{user.realName}</span>
               </div>
               <div className="review-item-fields">
-                <div><b>联系电话：</b>{user.phone || '-'}</div>
-                <div><b>角色：</b><Tag color="blue">{ROLE_MAP[user.appliedRole] || user.appliedRole}</Tag></div>
-                <div><b>申请理由：</b>{user.reason || '-'}</div>
-                <div><b>申请时间：</b>{dayjs(user.createdAt).format('YYYY-MM-DD HH:mm:ss')}</div>
+                <div className="field-row">
+                  <span><b>联系电话：</b>{user.phone || '-'}</span>
+                  <span><b>角色：</b><Tag color="blue">{ROLE_MAP[user.appliedRole] || user.appliedRole}</Tag></span>
+                </div>
+                <div className="field-row">
+                  <span><b>申请理由：</b>{user.reason || '-'}</span>
+                  <span><b>申请时间：</b>{dayjs(user.createdAt).format('YYYY-MM-DD HH:mm:ss')}</span>
+                </div>
               </div>
               <div className="review-item-actions">
                 <Button

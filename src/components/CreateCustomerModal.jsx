@@ -107,6 +107,16 @@ typeof initialValues === 'object' && visible && form.setFieldsValue(initialValue
               </Select>
             </Form.Item>
           </Col>
+          <Col xs={12} sm={12}>
+            <Form.Item label="客户状态" name="customerStatus">
+              <Select placeholder="请选择客户状态">
+                <Option value="LEAD">潜在客户</Option>
+                <Option value="PATIENT">正式患者</Option>
+                <Option value="IN_TREATMENT">治疗中</Option>
+                <Option value="COMPLETED">已完成</Option>
+              </Select>
+            </Form.Item>
+          </Col>
         </Row>
 
         <Form.Item label="客户需求" name="customerNeeds">
